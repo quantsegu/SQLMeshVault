@@ -1,0 +1,203 @@
+{
+  "status": "loaded",
+  "batch_id": "demo-001",
+  "engine_version": "2.0.0",
+  "model_hash": "8eb6ef5c074faf28df1b57fabe4c407ff8ef6c3e0f4f2b048f3ec67705a31c4a",
+  "tables": {
+    "load_hub_customer": {
+      "table": "hub_customer",
+      "input_rows": 8,
+      "skipped_null_keys": 0,
+      "inserted": 3,
+      "total_rows": 3,
+      "checks": [
+        {
+          "name": "hub_customer: null load timestamp or record source",
+          "status": "pass"
+        },
+        {
+          "name": "hub_customer: key collision within batch",
+          "status": "pass"
+        },
+        {
+          "name": "hub_customer: key collision with target",
+          "status": "pass"
+        }
+      ]
+    },
+    "load_hub_order": {
+      "table": "hub_order",
+      "input_rows": 3,
+      "skipped_null_keys": 0,
+      "inserted": 2,
+      "total_rows": 2,
+      "checks": [
+        {
+          "name": "hub_order: null load timestamp or record source",
+          "status": "pass"
+        },
+        {
+          "name": "hub_order: key collision within batch",
+          "status": "pass"
+        },
+        {
+          "name": "hub_order: key collision with target",
+          "status": "pass"
+        }
+      ]
+    },
+    "load_link_customer_order": {
+      "table": "link_customer_order",
+      "input_rows": 3,
+      "skipped_null_keys": 0,
+      "inserted": 2,
+      "total_rows": 2,
+      "checks": [
+        {
+          "name": "link_customer_order: null load timestamp or record source",
+          "status": "pass"
+        },
+        {
+          "name": "link_customer_order: orphan key CUSTOMER_HK -> hub_customer",
+          "status": "pass"
+        },
+        {
+          "name": "link_customer_order: orphan key ORDER_HK -> hub_order",
+          "status": "pass"
+        },
+        {
+          "name": "link_customer_order: key collision within batch",
+          "status": "pass"
+        },
+        {
+          "name": "link_customer_order: key collision with target",
+          "status": "pass"
+        }
+      ]
+    },
+    "load_sat_customer": {
+      "table": "sat_customer",
+      "input_rows": 5,
+      "skipped_null_keys": 0,
+      "inserted": 4,
+      "total_rows": 4,
+      "checks": [
+        {
+          "name": "sat_customer: null load timestamp or record source",
+          "status": "pass"
+        },
+        {
+          "name": "sat_customer: orphan key CUSTOMER_HK -> hub_customer",
+          "status": "pass"
+        },
+        {
+          "name": "sat_customer: null hashdiff",
+          "status": "pass"
+        },
+        {
+          "name": "sat_customer: conflicting states at the same load timestamp",
+          "status": "pass"
+        },
+        {
+          "name": "sat_customer: late-arriving change requires explicit reconciliation",
+          "status": "pass"
+        }
+      ]
+    },
+    "load_sat_order": {
+      "table": "sat_order",
+      "input_rows": 3,
+      "skipped_null_keys": 0,
+      "inserted": 3,
+      "total_rows": 3,
+      "checks": [
+        {
+          "name": "sat_order: null load timestamp or record source",
+          "status": "pass"
+        },
+        {
+          "name": "sat_order: orphan key CUSTOMER_ORDER_HK -> link_customer_order",
+          "status": "pass"
+        },
+        {
+          "name": "sat_order: null hashdiff",
+          "status": "pass"
+        },
+        {
+          "name": "sat_order: conflicting states at the same load timestamp",
+          "status": "pass"
+        },
+        {
+          "name": "sat_order: late-arriving change requires explicit reconciliation",
+          "status": "pass"
+        }
+      ]
+    }
+  },
+  "tests": [
+    {
+      "name": "hub_customer: unique key",
+      "status": "pass"
+    },
+    {
+      "name": "hub_customer: required columns",
+      "status": "pass"
+    },
+    {
+      "name": "hub_order: unique key",
+      "status": "pass"
+    },
+    {
+      "name": "hub_order: required columns",
+      "status": "pass"
+    },
+    {
+      "name": "link_customer_order: unique key",
+      "status": "pass"
+    },
+    {
+      "name": "link_customer_order: required columns",
+      "status": "pass"
+    },
+    {
+      "name": "link_customer_order: relationship CUSTOMER_HK",
+      "status": "pass"
+    },
+    {
+      "name": "link_customer_order: relationship ORDER_HK",
+      "status": "pass"
+    },
+    {
+      "name": "sat_customer: unique key",
+      "status": "pass"
+    },
+    {
+      "name": "sat_customer: required columns",
+      "status": "pass"
+    },
+    {
+      "name": "sat_customer: relationship CUSTOMER_HK",
+      "status": "pass"
+    },
+    {
+      "name": "sat_customer: consecutive change history",
+      "status": "pass"
+    },
+    {
+      "name": "sat_order: unique key",
+      "status": "pass"
+    },
+    {
+      "name": "sat_order: required columns",
+      "status": "pass"
+    },
+    {
+      "name": "sat_order: relationship CUSTOMER_ORDER_HK",
+      "status": "pass"
+    },
+    {
+      "name": "sat_order: consecutive change history",
+      "status": "pass"
+    }
+  ]
+}

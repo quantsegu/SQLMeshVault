@@ -1,0 +1,46 @@
+CREATE TABLE IF NOT EXISTS "sat_order" (
+  "CUSTOMER_ORDER_HK" BLOB NOT NULL,
+  "ORDER_HASHDIFF" BLOB NOT NULL,
+  "AMOUNT" VARCHAR,
+  "STATUS" VARCHAR,
+  "EFFECTIVE_AT" TIMESTAMPTZ,
+  "LOAD_DTS" TIMESTAMPTZ NOT NULL,
+  "RECORD_SOURCE" VARCHAR NOT NULL,
+  PRIMARY KEY ("CUSTOMER_ORDER_HK", "LOAD_DTS")
+);
+
+CREATE OR REPLACE TEMP TABLE "_hv_raw_sat_order" AS SELECT "CUSTOMER_ORDER_HK", "ORDER_HASHDIFF", "AMOUNT", "STATUS", "EFFECTIVE_AT", "LOAD_DTS", "RECORD_SOURCE", 0 AS "__priority" FROM "_hv_stage_erp";
+CREATE OR REPLACE TEMP TABLE "_hv_input_sat_order" AS SELECT CAST("CUSTOMER_ORDER_HK" AS BLOB) AS "CUSTOMER_ORDER_HK", CAST("ORDER_HASHDIFF" AS BLOB) AS "ORDER_HASHDIFF", CAST("AMOUNT" AS VARCHAR) AS "AMOUNT", CAST("STATUS" AS VARCHAR) AS "STATUS", CAST("EFFECTIVE_AT" AS TIMESTAMPTZ) AS "EFFECTIVE_AT", CAST("LOAD_DTS" AS TIMESTAMPTZ) AS "LOAD_DTS", CAST("RECORD_SOURCE" AS VARCHAR) AS "RECORD_SOURCE", "__priority" FROM "_hv_raw_sat_order" WHERE "CUSTOMER_ORDER_HK" IS NOT NULL;
+
+-- sat_order: null load timestamp or record source
+SELECT CASE WHEN EXISTS (SELECT 1 FROM "_hv_input_sat_order" WHERE "LOAD_DTS" IS NULL OR NULLIF(TRIM("RECORD_SOURCE"), '') IS NULL) THEN error('sat_order: null load timestamp or record source') ELSE 'ok' END;
+-- sat_order: orphan key CUSTOMER_ORDER_HK -> link_customer_order
+SELECT CASE WHEN EXISTS (SELECT 1 FROM "_hv_input_sat_order" s WHERE NOT EXISTS (SELECT 1 FROM "link_customer_order" p WHERE p."CUSTOMER_ORDER_HK" = s."CUSTOMER_ORDER_HK")) THEN error('sat_order: orphan key CUSTOMER_ORDER_HK -> link_customer_order') ELSE 'ok' END;
+-- sat_order: null hashdiff
+SELECT CASE WHEN EXISTS (SELECT 1 FROM "_hv_input_sat_order" WHERE "ORDER_HASHDIFF" IS NULL) THEN error('sat_order: null hashdiff') ELSE 'ok' END;
+-- sat_order: conflicting states at the same load timestamp
+SELECT CASE WHEN EXISTS (SELECT "CUSTOMER_ORDER_HK", "LOAD_DTS" FROM (SELECT DISTINCT "CUSTOMER_ORDER_HK", "ORDER_HASHDIFF", "AMOUNT", "STATUS", "EFFECTIVE_AT", "LOAD_DTS", "RECORD_SOURCE" FROM "_hv_input_sat_order") d GROUP BY "CUSTOMER_ORDER_HK", "LOAD_DTS" HAVING COUNT(*) > 1) THEN error('sat_order: conflicting states at the same load timestamp') ELSE 'ok' END;
+-- sat_order: late-arriving change requires explicit reconciliation
+SELECT CASE WHEN EXISTS (
+SELECT 1 FROM "_hv_input_sat_order" s
+WHERE s."LOAD_DTS" <= (SELECT MAX(t."LOAD_DTS") FROM "sat_order" t WHERE t."CUSTOMER_ORDER_HK" = s."CUSTOMER_ORDER_HK")
+AND s."ORDER_HASHDIFF" IS DISTINCT FROM (
+  SELECT t."ORDER_HASHDIFF" FROM "sat_order" t WHERE t."CUSTOMER_ORDER_HK" = s."CUSTOMER_ORDER_HK" AND t."LOAD_DTS" <= s."LOAD_DTS"
+  ORDER BY t."LOAD_DTS" DESC LIMIT 1
+)) THEN error('sat_order: late-arriving change requires explicit reconciliation') ELSE 'ok' END;
+
+INSERT INTO "sat_order" ("CUSTOMER_ORDER_HK", "ORDER_HASHDIFF", "AMOUNT", "STATUS", "EFFECTIVE_AT", "LOAD_DTS", "RECORD_SOURCE")
+WITH latest AS (
+  SELECT "CUSTOMER_ORDER_HK", "ORDER_HASHDIFF" AS "__last_hash", "LOAD_DTS" AS "__last_ldts" FROM "sat_order"
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY "CUSTOMER_ORDER_HK" ORDER BY "LOAD_DTS" DESC) = 1
+), fresh AS (
+  SELECT DISTINCT s."CUSTOMER_ORDER_HK", s."ORDER_HASHDIFF", s."AMOUNT", s."STATUS", s."EFFECTIVE_AT", s."LOAD_DTS", s."RECORD_SOURCE", t."__last_hash"
+  FROM "_hv_input_sat_order" s LEFT JOIN latest t ON s."CUSTOMER_ORDER_HK" = t."CUSTOMER_ORDER_HK"
+  WHERE t."CUSTOMER_ORDER_HK" IS NULL OR s."LOAD_DTS" > t."__last_ldts"
+), ordered AS (
+  SELECT *, ROW_NUMBER() OVER (PARTITION BY "CUSTOMER_ORDER_HK" ORDER BY "LOAD_DTS") AS "__seq",
+  LAG("ORDER_HASHDIFF") OVER (PARTITION BY "CUSTOMER_ORDER_HK" ORDER BY "LOAD_DTS") AS "__prev_hash"
+  FROM fresh
+)
+SELECT "CUSTOMER_ORDER_HK", "ORDER_HASHDIFF", "AMOUNT", "STATUS", "EFFECTIVE_AT", "LOAD_DTS", "RECORD_SOURCE" FROM ordered
+WHERE "ORDER_HASHDIFF" IS DISTINCT FROM CASE WHEN "__seq" = 1 THEN "__last_hash" ELSE "__prev_hash" END;

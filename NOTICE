@@ -1,0 +1,5 @@
+SQLMeshVault is an independent integration and source distribution.
+Bundled upstream sources retain their original copyright notices and licenses.
+https://github.com/SQLMesh/sqlmesh at ad2377ea9f065b26d957207958a024aaebc0b70f (vendor/sqlmesh)
+https://github.com/quantsegu/HamiltonVault at 9c77af2e1d5e18d5208e8cee2829e404bdc75cc5 (vendor/HamiltonVault)
+No affiliation or endorsement by upstream projects is implied.

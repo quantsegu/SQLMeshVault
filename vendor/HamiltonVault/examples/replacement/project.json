@@ -1,0 +1,154 @@
+{
+  "version": 2,
+  "name": "sales_vault",
+  "hashing": {
+    "algorithm": "MD5",
+    "storage": "binary"
+  },
+  "stages": {
+    "crm": {
+      "path": "crm.csv",
+      "columns": [
+        "CUSTOMER_ID",
+        "NAME",
+        "CITY",
+        "INGESTED_AT"
+      ],
+      "derived_columns": {
+        "LOAD_DTS": {
+          "column": "INGESTED_AT"
+        },
+        "RECORD_SOURCE": {
+          "literal": "CRM"
+        }
+      },
+      "hashed_columns": {
+        "CUSTOMER_HK": {
+          "columns": "CUSTOMER_ID"
+        },
+        "CUSTOMER_HASHDIFF": {
+          "columns": [
+            "NAME",
+            "CITY"
+          ],
+          "is_hashdiff": true
+        }
+      }
+    },
+    "erp": {
+      "path": "erp.csv",
+      "columns": [
+        "ACCOUNT_ID",
+        "ORDER_ID",
+        "AMOUNT",
+        "STATUS",
+        "INGESTED_AT",
+        "EFFECTIVE_AT"
+      ],
+      "derived_columns": {
+        "CUSTOMER_ID": {
+          "column": "ACCOUNT_ID"
+        },
+        "LOAD_DTS": {
+          "column": "INGESTED_AT"
+        },
+        "RECORD_SOURCE": {
+          "literal": "ERP"
+        }
+      },
+      "hashed_columns": {
+        "CUSTOMER_HK": {
+          "columns": "CUSTOMER_ID"
+        },
+        "ORDER_HK": {
+          "columns": "ORDER_ID"
+        },
+        "CUSTOMER_ORDER_HK": {
+          "columns": [
+            "CUSTOMER_ID",
+            "ORDER_ID"
+          ]
+        },
+        "ORDER_HASHDIFF": {
+          "columns": [
+            "STATUS",
+            "AMOUNT"
+          ],
+          "is_hashdiff": true
+        }
+      }
+    }
+  },
+  "models": [
+    {
+      "name": "hub_customer",
+      "kind": "hub",
+      "source_model": [
+        "crm",
+        "erp"
+      ],
+      "src_pk": "CUSTOMER_HK",
+      "src_nk": [
+        "CUSTOMER_ID"
+      ],
+      "src_ldts": "LOAD_DTS",
+      "src_source": "RECORD_SOURCE"
+    },
+    {
+      "name": "hub_order",
+      "kind": "hub",
+      "source_model": "erp",
+      "src_pk": "ORDER_HK",
+      "src_nk": [
+        "ORDER_ID"
+      ],
+      "src_ldts": "LOAD_DTS",
+      "src_source": "RECORD_SOURCE"
+    },
+    {
+      "name": "link_customer_order",
+      "kind": "link",
+      "source_model": "erp",
+      "src_pk": "CUSTOMER_ORDER_HK",
+      "src_fk": [
+        "CUSTOMER_HK",
+        "ORDER_HK"
+      ],
+      "references": {
+        "CUSTOMER_HK": "hub_customer",
+        "ORDER_HK": "hub_order"
+      },
+      "src_ldts": "LOAD_DTS",
+      "src_source": "RECORD_SOURCE"
+    },
+    {
+      "name": "sat_customer",
+      "kind": "sat",
+      "source_model": "crm",
+      "src_pk": "CUSTOMER_HK",
+      "src_hashdiff": "CUSTOMER_HASHDIFF",
+      "src_payload": [
+        "NAME",
+        "CITY"
+      ],
+      "parent": "hub_customer",
+      "src_ldts": "LOAD_DTS",
+      "src_source": "RECORD_SOURCE"
+    },
+    {
+      "name": "sat_order",
+      "kind": "sat",
+      "source_model": "erp",
+      "src_pk": "CUSTOMER_ORDER_HK",
+      "src_hashdiff": "ORDER_HASHDIFF",
+      "src_payload": [
+        "AMOUNT",
+        "STATUS"
+      ],
+      "src_eff": "EFFECTIVE_AT",
+      "parent": "link_customer_order",
+      "src_ldts": "LOAD_DTS",
+      "src_source": "RECORD_SOURCE"
+    }
+  ]
+}

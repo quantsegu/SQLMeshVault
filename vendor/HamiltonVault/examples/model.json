@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "sources": {
+    "sales": {
+      "path": "sales.csv",
+      "record_source": "crm.sales",
+      "columns": ["customer_id", "customer_name", "city", "order_id", "amount"]
+    }
+  },
+  "entities": [
+    {"name": "hub_customer", "kind": "hub", "source": "sales", "keys": ["customer_id"]},
+    {"name": "hub_order", "kind": "hub", "source": "sales", "keys": ["order_id"]},
+    {"name": "link_customer_order", "kind": "link", "source": "sales", "roles": [
+      {"name": "customer", "hub": "hub_customer", "columns": ["customer_id"]},
+      {"name": "order", "hub": "hub_order", "columns": ["order_id"]}
+    ]},
+    {"name": "sat_customer", "kind": "satellite", "source": "sales", "parent": "hub_customer", "attributes": ["customer_name", "city"]},
+    {"name": "sat_order", "kind": "satellite", "source": "sales", "parent": "link_customer_order", "attributes": ["amount"]}
+  ]
+}

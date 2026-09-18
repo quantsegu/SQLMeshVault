@@ -1,0 +1,53 @@
+.md-typeset .admonition.question,
+.md-typeset details.question{
+    border-color: rgb(68, 138, 255);
+}
+
+.md-typeset .question > .admonition-title,
+.md-typeset .question > summary {
+    background-color: rgba(68, 138, 255, 0.1);
+
+    &::before {
+      background-color: rgb(68, 138, 255);
+    }
+
+    &::after {
+      color: rgb(68, 138, 255);
+    }
+}
+
+.md-typeset .admonition.tip,
+.md-typeset details.tip{
+    border-color: rgb(61, 100, 226);
+}
+
+.md-typeset .tip > .admonition-title,
+.md-typeset .tip > summary {
+    background-color: rgba(61, 100, 226, 0.1);
+
+    &::before {
+      background-color: #3D64E2;
+    }
+
+    &::after {
+      color: #3D64E2;
+    }
+}
+
+.md-nav__link {
+    word-break: break-word;
+}
+
+:root {
+  --md-primary-fg-color: #3C64E2;
+}
+
+.md-tabs__item:last-child a::before {
+    content: "";
+    background: transparent url("tobiko-logo.svg") center left no-repeat;
+    background-size: contain;
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    margin-bottom: -4px;
+}

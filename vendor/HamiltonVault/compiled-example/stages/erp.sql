@@ -1,0 +1,15 @@
+CREATE OR REPLACE TEMP TABLE "_hv_stage_erp" AS
+WITH raw AS (SELECT * FROM read_csv('examples/replacement/erp.csv', header=true, auto_detect=false, delim=',', quote='"', escape='"', columns={'ACCOUNT_ID': 'VARCHAR', 'ORDER_ID': 'VARCHAR', 'AMOUNT': 'VARCHAR', 'STATUS': 'VARCHAR', 'INGESTED_AT': 'VARCHAR', 'EFFECTIVE_AT': 'VARCHAR'}, nullstr='', strict_mode=true)),
+derived AS (SELECT *, "ACCOUNT_ID" AS "CUSTOMER_ID", "INGESTED_AT" AS "LOAD_DTS", 'ERP' AS "RECORD_SOURCE" FROM raw),
+null_replaced AS (SELECT "ACCOUNT_ID" AS "ACCOUNT_ID", "ORDER_ID" AS "ORDER_ID", "AMOUNT" AS "AMOUNT", "STATUS" AS "STATUS", "INGESTED_AT" AS "INGESTED_AT", "EFFECTIVE_AT" AS "EFFECTIVE_AT", "CUSTOMER_ID" AS "CUSTOMER_ID", "LOAD_DTS" AS "LOAD_DTS", "RECORD_SOURCE" AS "RECORD_SOURCE" FROM derived)
+SELECT *, FROM_HEX(MD5(NULLIF(UPPER(TRIM(CAST("CUSTOMER_ID" AS VARCHAR))), ''))) AS "CUSTOMER_HK", FROM_HEX(MD5(NULLIF(UPPER(TRIM(CAST("ORDER_ID" AS VARCHAR))), ''))) AS "ORDER_HK", FROM_HEX(MD5(NULLIF(CONCAT_WS('||', COALESCE(NULLIF(UPPER(TRIM(CAST("CUSTOMER_ID" AS VARCHAR))), ''), '^^'), COALESCE(NULLIF(UPPER(TRIM(CAST("ORDER_ID" AS VARCHAR))), ''), '^^')), '^^||^^'))) AS "CUSTOMER_ORDER_HK", FROM_HEX(MD5(CONCAT_WS('||', COALESCE(NULLIF(UPPER(TRIM(CAST("AMOUNT" AS VARCHAR))), ''), '^^'), COALESCE(NULLIF(UPPER(TRIM(CAST("STATUS" AS VARCHAR))), ''), '^^')))) AS "ORDER_HASHDIFF" FROM null_replaced;
+-- erp.EFFECTIVE_AT: use ISO timestamps with explicit timezone
+SELECT CASE WHEN EXISTS (SELECT 1 FROM "_hv_stage_erp"
+WHERE "EFFECTIVE_AT" IS NOT NULL AND
+(NOT regexp_matches(CAST("EFFECTIVE_AT" AS VARCHAR), '(Z|[+-][0-9]{2}:[0-9]{2})$', 'i')
+ OR TRY_CAST("EFFECTIVE_AT" AS TIMESTAMPTZ) IS NULL)) THEN error('erp.EFFECTIVE_AT: use ISO timestamps with explicit timezone') ELSE 'ok' END;
+-- erp.LOAD_DTS: use ISO timestamps with explicit timezone
+SELECT CASE WHEN EXISTS (SELECT 1 FROM "_hv_stage_erp"
+WHERE "LOAD_DTS" IS NOT NULL AND
+(NOT regexp_matches(CAST("LOAD_DTS" AS VARCHAR), '(Z|[+-][0-9]{2}:[0-9]{2})$', 'i')
+ OR TRY_CAST("LOAD_DTS" AS TIMESTAMPTZ) IS NULL)) THEN error('erp.LOAD_DTS: use ISO timestamps with explicit timezone') ELSE 'ok' END;

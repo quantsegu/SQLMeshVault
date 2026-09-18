@@ -1,0 +1,27 @@
+project: repo_1
+
+gateways:
+  local:
+    connection:
+      type: duckdb
+      database: db.duckdb
+
+  memory:
+    connection:
+      type: duckdb
+
+default_gateway: local
+
+
+before_all:
+  - CREATE TABLE IF NOT EXISTS before_1 AS select @one()
+after_all:
+  - CREATE TABLE IF NOT EXISTS after_1 AS select @dup()
+
+model_defaults:
+  dialect: 'duckdb'
+
+linter:
+  enabled: True
+
+  warn_rules: "ALL"

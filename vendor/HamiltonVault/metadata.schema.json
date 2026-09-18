@@ -1,0 +1,152 @@
+{
+  "$defs": {
+    "Entity": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "hub",
+            "link",
+            "satellite"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "keys": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Keys",
+          "type": "array"
+        },
+        "roles": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Role"
+          },
+          "title": "Roles",
+          "type": "array"
+        },
+        "parent": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent"
+        },
+        "attributes": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Attributes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "name",
+        "kind",
+        "source"
+      ],
+      "title": "Entity",
+      "type": "object"
+    },
+    "Role": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "hub": {
+          "title": "Hub",
+          "type": "string"
+        },
+        "columns": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Columns",
+          "type": "array"
+        }
+      },
+      "required": [
+        "name",
+        "hub",
+        "columns"
+      ],
+      "title": "Role",
+      "type": "object"
+    },
+    "Source": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "record_source": {
+          "title": "Record Source",
+          "type": "string"
+        },
+        "columns": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Columns",
+          "type": "array"
+        }
+      },
+      "required": [
+        "path",
+        "record_source",
+        "columns"
+      ],
+      "title": "Source",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "const": 1,
+      "default": 1,
+      "title": "Version",
+      "type": "integer"
+    },
+    "sources": {
+      "additionalProperties": {
+        "$ref": "#/$defs/Source"
+      },
+      "title": "Sources",
+      "type": "object"
+    },
+    "entities": {
+      "items": {
+        "$ref": "#/$defs/Entity"
+      },
+      "title": "Entities",
+      "type": "array"
+    }
+  },
+  "required": [
+    "sources",
+    "entities"
+  ],
+  "title": "Model",
+  "type": "object"
+}

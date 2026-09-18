@@ -1,0 +1,341 @@
+{
+  "$defs": {
+    "Derived": {
+      "additionalProperties": false,
+      "properties": {
+        "column": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Column"
+        },
+        "literal": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Literal"
+        },
+        "load_timestamp": {
+          "default": false,
+          "title": "Load Timestamp",
+          "type": "boolean"
+        },
+        "transform": {
+          "default": "identity",
+          "enum": [
+            "identity",
+            "trim",
+            "upper",
+            "lower"
+          ],
+          "title": "Transform",
+          "type": "string"
+        }
+      },
+      "title": "Derived",
+      "type": "object"
+    },
+    "HashColumn": {
+      "additionalProperties": false,
+      "properties": {
+        "columns": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ],
+          "title": "Columns"
+        },
+        "is_hashdiff": {
+          "default": false,
+          "title": "Is Hashdiff",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "columns"
+      ],
+      "title": "HashColumn",
+      "type": "object"
+    },
+    "Hashing": {
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": {
+          "default": "MD5",
+          "enum": [
+            "MD5",
+            "SHA256"
+          ],
+          "title": "Algorithm",
+          "type": "string"
+        },
+        "casing": {
+          "default": "UPPER",
+          "enum": [
+            "UPPER",
+            "DISABLED"
+          ],
+          "title": "Casing",
+          "type": "string"
+        },
+        "concat_string": {
+          "default": "||",
+          "minLength": 1,
+          "title": "Concat String",
+          "type": "string"
+        },
+        "null_placeholder_string": {
+          "default": "^^",
+          "minLength": 1,
+          "title": "Null Placeholder String",
+          "type": "string"
+        },
+        "storage": {
+          "default": "binary",
+          "enum": [
+            "binary",
+            "hex"
+          ],
+          "title": "Storage",
+          "type": "string"
+        }
+      },
+      "title": "Hashing",
+      "type": "object"
+    },
+    "Stage": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "columns": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Columns",
+          "type": "array"
+        },
+        "derived_columns": {
+          "additionalProperties": {
+            "$ref": "#/$defs/Derived"
+          },
+          "title": "Derived Columns",
+          "type": "object"
+        },
+        "null_columns": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Null Columns",
+          "type": "object"
+        },
+        "hashed_columns": {
+          "additionalProperties": {
+            "$ref": "#/$defs/HashColumn"
+          },
+          "title": "Hashed Columns",
+          "type": "object"
+        }
+      },
+      "required": [
+        "path",
+        "columns",
+        "hashed_columns"
+      ],
+      "title": "Stage",
+      "type": "object"
+    },
+    "Table": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "hub",
+            "link",
+            "sat"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "source_model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ],
+          "title": "Source Model"
+        },
+        "src_pk": {
+          "title": "Src Pk",
+          "type": "string"
+        },
+        "src_ldts": {
+          "title": "Src Ldts",
+          "type": "string"
+        },
+        "src_source": {
+          "title": "Src Source",
+          "type": "string"
+        },
+        "src_nk": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Src Nk",
+          "type": "array"
+        },
+        "src_fk": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Src Fk",
+          "type": "array"
+        },
+        "src_hashdiff": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Src Hashdiff"
+        },
+        "src_payload": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Src Payload",
+          "type": "array"
+        },
+        "src_eff": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Src Eff"
+        },
+        "src_extra_columns": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Src Extra Columns",
+          "type": "array"
+        },
+        "references": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "References",
+          "type": "object"
+        },
+        "parent": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent"
+        },
+        "late_arriving": {
+          "default": "error",
+          "enum": [
+            "error",
+            "ignore"
+          ],
+          "title": "Late Arriving",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "kind",
+        "source_model",
+        "src_pk",
+        "src_ldts",
+        "src_source"
+      ],
+      "title": "Table",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "const": 2,
+      "default": 2,
+      "title": "Version",
+      "type": "integer"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "hashing": {
+      "$ref": "#/$defs/Hashing"
+    },
+    "stages": {
+      "additionalProperties": {
+        "$ref": "#/$defs/Stage"
+      },
+      "title": "Stages",
+      "type": "object"
+    },
+    "models": {
+      "items": {
+        "$ref": "#/$defs/Table"
+      },
+      "title": "Models",
+      "type": "array"
+    }
+  },
+  "required": [
+    "name",
+    "stages",
+    "models"
+  ],
+  "title": "Project",
+  "type": "object"
+}

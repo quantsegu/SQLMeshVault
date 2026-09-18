@@ -1,0 +1,9 @@
+usage: sqlmesh-vault [-h] {build,apply} ...
+
+Compile and execute native SQLMesh Data Vault models
+
+positional arguments:
+  {build,apply}
+
+options:
+  -h, --help     show this help message and exit

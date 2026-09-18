@@ -1,0 +1,35 @@
+test_customer_stage_contract:
+  model: staging.crm
+  inputs:
+    raw.crm:
+      rows:
+        - CUSTOMER_ID: C001
+          NAME: Alice
+          CITY: Zurich
+          INGESTED_AT: '2026-01-01T00:00:00Z'
+  outputs:
+    query:
+      partial: true
+      rows:
+        - CUSTOMER_ID: C001
+          LOAD_DTS: '2026-01-01T00:00:00Z'
+          RECORD_SOURCE: CRM
+
+test_erp_customer_alias:
+  model: staging.erp
+  inputs:
+    raw.erp:
+      rows:
+        - ACCOUNT_ID: C003
+          ORDER_ID: O002
+          AMOUNT: '75.00'
+          STATUS: NEW
+          INGESTED_AT: '2026-01-02T00:00:00Z'
+          EFFECTIVE_AT: '2026-01-01T14:00:00Z'
+  outputs:
+    query:
+      partial: true
+      rows:
+        - CUSTOMER_ID: C003
+          RECORD_SOURCE: ERP
+          LOAD_DTS: '2026-01-02T00:00:00Z'

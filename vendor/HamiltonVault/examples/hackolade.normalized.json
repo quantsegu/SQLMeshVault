@@ -1,0 +1,19 @@
+{
+  "entities": [
+    {
+      "name": "hub_customer"
+    },
+    {
+      "name": "hub_order"
+    },
+    {
+      "name": "link_customer_order"
+    },
+    {
+      "name": "sat_customer"
+    },
+    {
+      "name": "sat_order"
+    }
+  ]
+}

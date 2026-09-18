@@ -1,0 +1,34 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sqlmesh-vault"
+version = "0.1.0"
+description = "Complete SQLMesh and HamiltonVault sources with native append-only vault model generation"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+dependencies = ["sqlmesh", "hamilton-vault==0.2.0"]
+
+[project.scripts]
+sqlmesh-vault = "sqlmesh_vault.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["sqlmesh_vault"]
+
+[tool.hatch.envs.default]
+python = "3.11"
+skip-install = true
+dependencies = ["sqlmesh-vault @ {root:uri}", "sqlmesh @ {root:uri}/vendor/sqlmesh", "hamilton-vault @ {root:uri}/vendor/HamiltonVault", "custom_materializations @ {root:uri}/vendor/sqlmesh/examples/custom_materializations", "google-cloud-bigquery[pandas]", "google-cloud-bigquery-storage", "pytest>=8,<9", "pytest-mock", "pytest-xdist", "pytest-asyncio", "pytest-rerunfailures", "time-machine", "hypothesis", "agate", "dbt-core<2", "dbt-duckdb", "pyarrow", "pyspark~=3.5.0", "numpy>=1.26,<2", "snowflake-connector-python[pandas]", "snowflake-snowpark-python", "Faker", "ruff"]
+
+[tool.hatch.envs.default.env-vars]
+HAMILTON_TELEMETRY_ENABLED = "false"
+SQLMESH__DISABLE_ANONYMIZED_ANALYTICS = "true"
+SQLMESH_HOME = "{root}/.sqlmesh-user"
+
+[tool.hatch.envs.default.scripts]
+test = "python -m pytest tests -p no:rerunfailures -q {args}"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

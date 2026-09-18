@@ -1,0 +1,209 @@
+site_name: SQLMesh
+repo_url: https://github.com/SQLMesh/sqlmesh
+repo_name: SQLMesh/sqlmesh
+nav:
+  - "Overview": index.md
+  - Get started:
+    - quick_start.md
+    - prerequisites.md
+    - installation.md
+    - quickstart/cli.md
+    - quickstart/notebook.md
+    - quickstart/ui.md
+  - Guides:
+    - Project structure:
+      - guides/projects.md
+      - guides/multi_repo.md
+      - guides/isolated_systems.md
+      - guides/multi_engine.md
+    - Project setup:
+      - guides/configuration.md
+      - guides/connections.md
+      - guides/scheduling.md
+      - guides/notifications.md
+      - guides/migrations.md
+      - guides/table_migration.md
+      - guides/custom_materializations.md
+    - Project content:
+      - guides/models.md
+      - guides/incremental_time.md
+      - guides/testing.md
+      - guides/model_selection.md
+    - SQLMesh tools:
+      - guides/vscode.md
+      - guides/tablediff.md
+      - guides/linter.md
+      - guides/ui.md
+    - Advanced usage:
+      - guides/customizing_sqlmesh.md
+      - guides/signals.md
+  - Concepts:
+    - concepts/overview.md
+    - Development:
+      - concepts/plans.md
+      - concepts/environments.md
+      - concepts/tests.md
+      - concepts/audits.md
+      - concepts/state.md
+    - Models:
+      - concepts/models/overview.md
+      - concepts/models/model_kinds.md
+      - concepts/models/sql_models.md
+      - concepts/models/python_models.md
+      - concepts/models/seed_models.md
+      - concepts/models/external_models.md
+      - concepts/models/managed_models.md
+    - Macros:
+      - concepts/macros/overview.md
+      - concepts/macros/macro_variables.md
+      - concepts/macros/sqlmesh_macros.md
+      - concepts/macros/jinja_macros.md
+    - Metrics:
+      - concepts/metrics/overview.md
+      - concepts/metrics/definition.md
+    - Architecture:
+      - concepts/architecture/snapshots.md
+      - concepts/architecture/serialization.md
+    - concepts/glossary.md
+  - Examples:
+    - examples/overview.md
+    - Walkthroughs:
+      - examples/sqlmesh_cli_crash_course.md
+      - examples/incremental_time_full_walkthrough.md
+  - Integrations:
+    - "Overview": integrations/overview.md
+    - Tools:
+      - integrations/dbt.md
+      - integrations/dlt.md
+      - integrations/github.md
+    - Execution engines:
+      - integrations/engines/athena.md
+      - integrations/engines/azuresql.md
+      - integrations/engines/bigquery.md
+      - integrations/engines/clickhouse.md
+      - integrations/engines/databricks.md
+      - integrations/engines/duckdb.md
+      - integrations/engines/fabric.md
+      - integrations/engines/motherduck.md
+      - integrations/engines/mssql.md
+      - integrations/engines/mysql.md
+      - integrations/engines/postgres.md
+      - integrations/engines/gcp-postgres.md
+      - integrations/engines/redshift.md
+      - integrations/engines/risingwave.md
+      - integrations/engines/snowflake.md
+      - integrations/engines/spark.md
+      - integrations/engines/starrocks.md
+      - integrations/engines/trino.md
+  - Resources:
+    - comparisons.md
+    - development.md
+  - "FAQ": faq/faq.md
+  - Reference:
+    - API:
+      - reference/overview.md
+      - reference/cli.md
+      - reference/notebook.md
+      - reference/python.md
+    - Configuration:
+      - reference/configuration.md
+      - reference/model_configuration.md
+  - Tobiko Cloud: # NOTE: if this item is no longer last, need to update extra.css to adjust logo positioning
+    - "Overview": cloud/cloud_index.md
+    - "Getting Started": cloud/tcloud_getting_started.md
+    - Cloud Features:
+      - "Alerts & Notifications": cloud/features/alerts_notifications.md
+      - cloud/features/data_catalog.md
+      - cloud/features/debugger_view.md
+      - Maintenance:
+        - cloud/features/incident_reporting.md
+        - cloud/features/upgrades.md
+      - Scheduler:
+        - "Cloud": cloud/features/scheduler/scheduler.md
+        - "Cloud Hybrid Deployments":
+          - "Overview": cloud/features/scheduler/hybrid_executors_overview.md
+          - "Helm Chart example": cloud/features/scheduler/hybrid_executors_helm.md
+          - "Docker Compose example": cloud/features/scheduler/hybrid_executors_docker_compose.md
+        - cloud/features/scheduler/airflow.md
+        - cloud/features/scheduler/dagster.md
+      - Security:
+        - cloud/features/security/security.md
+        - cloud/features/security/single_sign_on.md
+      - Tools:
+        - cloud/features/xdb_diffing.md
+#      - Observability:
+#        - cloud/features/observability/overview.md
+#        - cloud/features/observability/model_freshness.md
+#        - cloud/features/observability/prod_environment.md
+#        - cloud/features/observability/development_environment.md
+#        - cloud/features/observability/plan.md
+#        - cloud/features/observability/run.md
+#        - cloud/features/observability/model.md
+#        - "Measures & Dashboards": cloud/features/observability/measures_dashboards.md
+theme:
+  name: material
+  logo: _readthedocs/html/sqlmesh.png
+  favicon: _readthedocs/html/favicon.svg
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: #3C64E2
+      accent: #3C64E2
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: #3C64E2
+      accent: #3C64E2
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+  features:
+    - content.tabs.link
+    - content.code.copy
+    - navigation.expand ## expands navigation bar by default
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+    - toc.follow
+    - search.suggest
+    - search.highlight
+plugins:
+  - include-markdown
+  - search:
+      separator: '[\s\-,:!=\[\]()"/_]+'
+  - glightbox
+markdown_extensions:
+  - def_list
+  - tables
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - pymdownx.caret
+  - sane_lists
+extra_css:
+  - stylesheets/extra.css
+copyright: Tobiko Data Inc.
+extra:
+  social:
+    - icon: fontawesome/brands/slack
+      link: https://tobikodata.com/slack
+    - icon: fontawesome/solid/paper-plane
+      link: mailto:hello@tobikodata.com
+    - icon: fontawesome/brands/github
+      link: https://github.com/SQLMesh/sqlmesh/issues/new
+  analytics:
+    provider: google
+    property: G-JXQ1R227VS

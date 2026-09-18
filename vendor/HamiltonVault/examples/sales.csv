@@ -1,0 +1,4 @@
+customer_id,customer_name,city,order_id,amount
+C001,Alice,Zurich,O001,125.00
+C001,Alice,Zurich,O002,75.00
+C002,Bob,Basel,O003,200.00

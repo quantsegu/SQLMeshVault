@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.hypothesis/
+*.egg-info/
+*.duckdb
+*.duckdb.wal
+build/
+dist/
+logs/
+.cache/
+.sqlmesh-user/
+load_state.json
+.DS_Store

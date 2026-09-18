@@ -1,0 +1,120 @@
+{
+  "version": 2,
+  "engine_version": "2.0.0",
+  "backend": "duckdb",
+  "project": "sales_vault",
+  "model_hash": "8eb6ef5c074faf28df1b57fabe4c407ff8ef6c3e0f4f2b048f3ec67705a31c4a",
+  "load_dts": "2026-01-05T00:00:00+00:00",
+  "models": {
+    "hub_customer": {
+      "kind": "hub",
+      "sources": [
+        "crm",
+        "erp"
+      ],
+      "depends_on": [],
+      "columns": {
+        "CUSTOMER_HK": "BLOB",
+        "CUSTOMER_ID": "VARCHAR",
+        "LOAD_DTS": "TIMESTAMPTZ",
+        "RECORD_SOURCE": "VARCHAR"
+      },
+      "checks": [
+        "hub_customer: null load timestamp or record source",
+        "hub_customer: key collision within batch",
+        "hub_customer: key collision with target"
+      ]
+    },
+    "hub_order": {
+      "kind": "hub",
+      "sources": [
+        "erp"
+      ],
+      "depends_on": [],
+      "columns": {
+        "ORDER_HK": "BLOB",
+        "ORDER_ID": "VARCHAR",
+        "LOAD_DTS": "TIMESTAMPTZ",
+        "RECORD_SOURCE": "VARCHAR"
+      },
+      "checks": [
+        "hub_order: null load timestamp or record source",
+        "hub_order: key collision within batch",
+        "hub_order: key collision with target"
+      ]
+    },
+    "link_customer_order": {
+      "kind": "link",
+      "sources": [
+        "erp"
+      ],
+      "depends_on": [
+        "hub_customer",
+        "hub_order"
+      ],
+      "columns": {
+        "CUSTOMER_ORDER_HK": "BLOB",
+        "CUSTOMER_HK": "BLOB",
+        "ORDER_HK": "BLOB",
+        "LOAD_DTS": "TIMESTAMPTZ",
+        "RECORD_SOURCE": "VARCHAR"
+      },
+      "checks": [
+        "link_customer_order: null load timestamp or record source",
+        "link_customer_order: orphan key CUSTOMER_HK -> hub_customer",
+        "link_customer_order: orphan key ORDER_HK -> hub_order",
+        "link_customer_order: key collision within batch",
+        "link_customer_order: key collision with target"
+      ]
+    },
+    "sat_customer": {
+      "kind": "sat",
+      "sources": [
+        "crm"
+      ],
+      "depends_on": [
+        "hub_customer"
+      ],
+      "columns": {
+        "CUSTOMER_HK": "BLOB",
+        "CUSTOMER_HASHDIFF": "BLOB",
+        "NAME": "VARCHAR",
+        "CITY": "VARCHAR",
+        "LOAD_DTS": "TIMESTAMPTZ",
+        "RECORD_SOURCE": "VARCHAR"
+      },
+      "checks": [
+        "sat_customer: null load timestamp or record source",
+        "sat_customer: orphan key CUSTOMER_HK -> hub_customer",
+        "sat_customer: null hashdiff",
+        "sat_customer: conflicting states at the same load timestamp",
+        "sat_customer: late-arriving change requires explicit reconciliation"
+      ]
+    },
+    "sat_order": {
+      "kind": "sat",
+      "sources": [
+        "erp"
+      ],
+      "depends_on": [
+        "link_customer_order"
+      ],
+      "columns": {
+        "CUSTOMER_ORDER_HK": "BLOB",
+        "ORDER_HASHDIFF": "BLOB",
+        "AMOUNT": "VARCHAR",
+        "STATUS": "VARCHAR",
+        "EFFECTIVE_AT": "TIMESTAMPTZ",
+        "LOAD_DTS": "TIMESTAMPTZ",
+        "RECORD_SOURCE": "VARCHAR"
+      },
+      "checks": [
+        "sat_order: null load timestamp or record source",
+        "sat_order: orphan key CUSTOMER_ORDER_HK -> link_customer_order",
+        "sat_order: null hashdiff",
+        "sat_order: conflicting states at the same load timestamp",
+        "sat_order: late-arriving change requires explicit reconciliation"
+      ]
+    }
+  }
+}
