@@ -1,0 +1,15 @@
+{
+  "type": "databricks",
+  "connection": {
+    "server_hostname": {
+      "env": "DATABRICKS_SERVER_HOSTNAME"
+    },
+    "http_path": {
+      "env": "DATABRICKS_HTTP_PATH"
+    },
+    "access_token": {
+      "env": "DATABRICKS_TOKEN"
+    },
+    "catalog": "demo"
+  }
+}

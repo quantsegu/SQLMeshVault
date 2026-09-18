@@ -87,6 +87,10 @@ def sync_sources(path: str | Path, execution_time: str) -> None:
 
 def apply(path: str | Path, execution_time: str = "2026-01-05T00:00:00Z") -> dict:
     path = Path(path).resolve()
+    if (path / "warehouse-plan.json").exists():
+        from .remote import apply as apply_remote
+
+        return apply_remote(path, execution_time)
     state_path = path / "load_state.json"
     source_hash = hashlib.sha256(
         b"".join(f.read_bytes() for f in sorted((path / "sources").glob("*.csv")))

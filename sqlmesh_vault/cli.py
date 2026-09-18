@@ -15,10 +15,23 @@ def main() -> None:
     p = sub.add_parser("build")
     p.add_argument("metadata")
     p.add_argument("--output", required=True)
+    p = sub.add_parser("build-warehouse")
+    p.add_argument("metadata")
+    p.add_argument("--warehouse", required=True)
+    p.add_argument("--output", required=True)
     p = sub.add_parser("apply")
     p.add_argument("project")
     p.add_argument("--execution-time", default="2026-01-05T00:00:00Z")
     args = parser.parse_args()
+    if args.command == "build-warehouse":
+        from .remote import build as build_remote
+
+        print(
+            json.dumps(
+                build_remote(args.metadata, args.warehouse, args.output), indent=2
+            )
+        )
+        return
     result = (
         build(args.metadata, args.output)
         if args.command == "build"

@@ -1,0 +1,24 @@
+{
+  "warehouse": {
+    "type": "databricks",
+    "connection": {
+      "server_hostname": {
+        "env": "DATABRICKS_SERVER_HOSTNAME"
+      },
+      "http_path": {
+        "env": "DATABRICKS_HTTP_PATH"
+      },
+      "access_token": {
+        "env": "DATABRICKS_TOKEN"
+      },
+      "catalog": "demo"
+    }
+  },
+  "source_tables": {
+    "crm": "demo.landing.crm",
+    "erp": "demo.landing.erp"
+  },
+  "target_schema": "demo.raw_vault",
+  "staging_schema": "demo.vault_stage",
+  "load_dts": "2026-01-05T00:00:00Z"
+}

@@ -100,3 +100,7 @@ Snowflake/Databricks deployment adapter.
 
 `TEST_REPORT.md` records actual integration, reference and upstream test runs,
 including limitations. `reports/` contains JUnit evidence.
+
+## Warehouse adapters
+
+See [WAREHOUSES.md](WAREHOUSES.md) for Databricks, Snowflake, and ClickHouse configuration, target placement, offline validation, and execution limitations.

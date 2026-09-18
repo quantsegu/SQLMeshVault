@@ -1,0 +1,16 @@
+{
+  "type": "clickhouse",
+  "connection": {
+    "host": {
+      "env": "CLICKHOUSE_HOST"
+    },
+    "username": {
+      "env": "CLICKHOUSE_USER"
+    },
+    "password": {
+      "env": "CLICKHOUSE_PASSWORD"
+    },
+    "secure": true,
+    "port": 8443
+  }
+}

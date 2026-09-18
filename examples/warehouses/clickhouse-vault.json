@@ -1,0 +1,25 @@
+{
+  "warehouse": {
+    "type": "clickhouse",
+    "connection": {
+      "host": {
+        "env": "CLICKHOUSE_HOST"
+      },
+      "username": {
+        "env": "CLICKHOUSE_USER"
+      },
+      "password": {
+        "env": "CLICKHOUSE_PASSWORD"
+      },
+      "secure": true,
+      "port": 8443
+    }
+  },
+  "source_tables": {
+    "crm": "landing.crm",
+    "erp": "landing.erp"
+  },
+  "target_schema": "raw_vault",
+  "staging_schema": "vault_stage",
+  "load_dts": "2026-01-05T00:00:00Z"
+}

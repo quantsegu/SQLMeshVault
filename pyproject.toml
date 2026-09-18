@@ -8,7 +8,12 @@ version = "0.1.0"
 description = "Complete SQLMesh and HamiltonVault sources with native append-only vault model generation"
 requires-python = ">=3.11"
 license = "Apache-2.0"
-dependencies = ["sqlmesh", "hamilton-vault==0.2.0"]
+dependencies = ["sqlglot>=30.8,<31", "sqlmesh", "hamilton-vault==0.2.0"]
+
+[project.optional-dependencies]
+databricks = ["databricks-sql-connector>=3,<5", "databricks-sdk>=0.40,<1"]
+snowflake = ["snowflake-connector-python>=3,<5"]
+clickhouse = ["clickhouse-connect>=0.8,<2"]
 
 [project.scripts]
 sqlmesh-vault = "sqlmesh_vault.cli:main"
